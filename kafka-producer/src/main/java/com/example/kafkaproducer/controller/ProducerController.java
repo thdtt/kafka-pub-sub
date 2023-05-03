@@ -37,11 +37,11 @@ public class ProducerController {
         CompletableFuture<SendResult<String, String>> cf = kafkaTemplate.send(_TOPIC_TEST, message).completable();
         cf.whenComplete((result, ex) -> {
             if (ex == null) {
-                log.info("Sent message=[" + message +
-                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
+                log.info("\tSent message=[" + message +
+                        "] with offset=[" + result.getRecordMetadata().offset() + "]\n");
             } else {
-                log.info("Unable to send message=[" +
-                        message + "] due to : " + ex.getMessage());
+                log.info("\tUnable to send message=[" +
+                        message + "] due to : " + ex.getMessage() + "\n");
             }
         });
     }
