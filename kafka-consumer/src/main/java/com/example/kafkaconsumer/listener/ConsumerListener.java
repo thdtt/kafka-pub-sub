@@ -21,19 +21,19 @@ public class ConsumerListener {
      * Single Topic handler
      * @param message
      */
-    @KafkaListener(topics = _TOPIC_TEST_1, groupId = _GROUP_ID)
+    @KafkaListener(topics = _TOPIC_TEST_1, groupId = _GROUP_ID, concurrency = "5")
     public void listenGroupFoo(String message) {
-        log.info("\tReceived Message in group foo: {}\n", message);
+        log.info("\tReceived Message thread {} in group foo: {}\n", Thread.currentThread().getId(), message);
     }
 
     /**
      * Multiple Topic handler
      * @param message
      */
-    @KafkaListener(topics = "test, test2", groupId = _GROUP_ID)
-    public void multiTopicListenGroupFoo(String message) {
-        log.info("\tReceived Message in group foo: {}\n", message);
-    }
+//    @KafkaListener(topics = "test, test-2", groupId = _GROUP_ID)
+//    public void multiTopicListenGroupFoo(String message) {
+//        log.info("\tReceived Message in group foo: {}\n", message);
+//    }
 
     @KafkaListener(topics = "topicName")
     public void listenWithHeaders(
