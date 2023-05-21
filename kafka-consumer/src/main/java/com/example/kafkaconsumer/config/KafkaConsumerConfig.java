@@ -9,6 +9,10 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.util.backoff.BackOff;
+import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,11 +43,24 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
+    public DefaultErrorHandler errorHandler() {
+        BackOff fixedBackOff = new FixedBackOff(3000, 3);
+        DefaultErrorHandler errorHandler = new DefaultErrorHandler((consumerRecord, exception) -> {
+            // logic to execute when all the retry attemps are exhausted
+        }, fixedBackOff);
+        return errorHandler;
+    }
+
+    @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String>
     kafkaListenerContainerFactory() {
 
         ConcurrentKafkaListenerContainerFactory<String, String> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
+
+        factory.setCommonErrorHandler(errorHandler());
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
